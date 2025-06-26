@@ -1,6 +1,6 @@
-# Image Resizer
+# Dimensify
 
-A modern, fullstack image resizing web application built with Next.js (App Router) that allows users to upload, resize, and download multiple images instantly without any permanent storage.
+Image resizing web application built with Next.js (App Router) that allows users to upload, resize, and download multiple images instantly without any permanent storage.
 
 ## Features
 
@@ -10,7 +10,7 @@ A modern, fullstack image resizing web application built with Next.js (App Route
 - **Batch Processing**: Resize all uploaded images simultaneously with the same settings
 - **Real-time Preview**: Grid view of original and resized images
 - **Customizable Dimensions**: Set custom width and height for resizing
-- **Multiple Formats**: Support for JPEG and WebP output formats
+- **Multiple Formats**: Support for JPEG, JPG, PNG and WebP 
 - **Quality Control**: Adjustable compression quality (1-100%)
 - **Instant Download**: Download individual images or all resized images at once
 - **No Storage**: Images are processed temporarily and never saved to disk
@@ -94,7 +94,7 @@ The `/api/resize` route accepts POST requests with the following parameters:
 - `image`: The image file to resize
 - `width`: Target width in pixels
 - `height`: Target height in pixels  
-- `format`: Output format (jpeg, webp)
+- `format`: Output format (jpeg, jpg, png, and webp)
 - `quality`: Compression quality (1-100)
 
 The endpoint returns the resized image as a blob with appropriate headers for download.
@@ -133,13 +133,14 @@ ImageResizer/
 - No database or persistent storage required
 
 ### Format Support
-- **JPEG**: Optimized with mozjpeg and progressive encoding
-- **WebP**: High-quality compression with near-lossless option
-- **PNG**: Removed as it's not needed for this use case
+- **JPEG**
+- **JPG**
+- **WebP**
+- **PNG**
 
 ### Error Handling
 - File size validation (5MB limit per image)
-- File type validation (JPEG, WebP only)
+- File type validation (JPEG,JPG,PNG and WebP only)
 - Dimension validation (positive numbers required)
 - Quality range validation (1-100%)
 - Network error handling with user-friendly messages
@@ -157,19 +158,3 @@ ImageResizer/
 - Firefox 88+
 - Safari 14+
 - Edge 90+
-
-## License
-
-MIT License - feel free to use this project for personal or commercial purposes.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## Support
-
-If you encounter any issues or have questions, please open an issue on the repository.
