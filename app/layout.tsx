@@ -1,12 +1,17 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Poppins, Manrope } from "next/font/google"
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+
+// Self-host Google fonts via next/font
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const poppins = Poppins({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-poppins" })
+const manrope = Manrope({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-manrope" })
 
 export const metadata: Metadata = {
-  title: 'Image Resizer',
-  description: 'A modern image resizing tool built with Next.js',
+  title: "Dimensify - Resize Images Instantly",
+  description:
+    "Transform your images effortlessly while preserving quality and format. Fast, reliable, and designed for modern workflows.",
 }
 
 export default function RootLayout({

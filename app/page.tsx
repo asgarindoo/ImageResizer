@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import Image from 'next/image'
-import JSZip from 'jszip'
+import { Github, Star, Trash2, Eye, Download, X, Settings, Settings2, Settings2Icon } from "lucide-react"
 
 interface ImageData {
   file: File
@@ -219,12 +219,39 @@ export default function Home() {
     document.body.removeChild(link)
   }
 
-  const handleDownloadAll = () => {
-    Object.keys(resizedImages).forEach((imageId, index) => {
-      setTimeout(() => {
-        handleDownload(imageId)
-      }, index * 100)
-    })
+  const handleDownloadAll = async () => {
+    try {
+      // Create a new JSZip instance
+      const JSZip = (await import('jszip')).default
+      const zip = new JSZip()
+      
+      // Add each resized image to the zip
+      for (const imageId of Object.keys(resizedImages)) {
+        const original = originalImages.find(img => img.id === imageId)
+        if (original) {
+          // Fetch the blob from the URL
+          const response = await fetch(resizedImages[imageId])
+          const blob = await response.blob()
+          
+          // Add to zip with proper filename
+          const fileName = randomName(original.ext)
+          zip.file(fileName, blob)
+        }
+      }
+      
+      // Generate and download the zip
+      const zipBlob = await zip.generateAsync({ type: 'blob' })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(zipBlob)
+      link.download = `images_byDimensify.zip`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(link.href)
+    } catch (error) {
+      console.error('Error creating ZIP:', error)
+      setError('Failed to create ZIP file. Please try downloading individually.')
+    }
   }
 
   const removeImage = (imageId: string) => {
@@ -249,37 +276,76 @@ export default function Home() {
   // Get which formats are present in the current upload
   const presentFormats = new Set(originalImages.map(img => img.ext))
 
-  // Calculate total size of all resized images
-  const totalResizedSize = originalImages.reduce((acc, image) => acc + (resizedImages[image.id] ? image.file.size : 0), 0);
+  // Calculate total size of resized images
+  const totalResizedSize = Object.keys(resizedImages).reduce((total, imageId) => {
+    const original = originalImages.find(img => img.id === imageId)
+    return total + (original?.file.size || 0)
+  }, 0)
 
-  // Download All button with total size and ZIP support
-  const handleDownloadAllZip = async () => {
-    const zip = new JSZip();
-    for (const image of originalImages) {
-      if (resizedImages[image.id]) {
-        const response = await fetch(resizedImages[image.id]);
-        const blob = await response.blob();
-        zip.file(randomName(image.ext), blob);
-      }
-    }
-    const content = await zip.generateAsync({ type: 'blob' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(content);
-    link.download = `Images_byDimensify.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const [stars, setStars] = useState<number | null>(null)
+
+  useEffect(() => {
+    fetch('https://api.github.com/repos/asgarindoo/ImageResizer')
+      .then(res => res.json())
+      .then(data => setStars(data.stargazers_count))
+      .catch(err => console.error("Failed to fetch stars", err))
+  }, [])
+
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-black mb-4 tracking-tight">Dimensify</h1>
-          <p className="text-gray-600 text-lg">Resize your images instantly and keep their original format</p>
+      {/* Sticky Navbar */}
+      <nav className="sticky top-0 z-50 border-b border-yellow-100 shadow-sm backdrop-blur-md bg-white/80">
+        <div className="container px-6 py-4 mx-auto">
+          <div className="flex justify-between items-center">
+          <div className="flex gap-2 items-center text-2xl font-extrabold text-black">
+          <div className="w-3 h-3 bg-yellow-400 rounded-full shadow animate-pulse"/>
+          <span>Dimensify</span>
+        </div>
+
+            <a
+              href="https://github.com/asgarindoo/ImageResizer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full transition-colors hover:bg-yellow-50"
+            >
+              <Github className="w-6 h-6 text-black" />
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container px-6 py-12 mx-auto max-w-6xl">
+        {/* Hero Section */}
+        <div className="relative mb-16 text-center">
+
+          {/* GitHub Badge */}
+          <div
+            className= "inline-flex gap-2 items-center px-6 py-2 mb-8 text-yellow-400 bg-yellow-50 rounded-full border border-yellow-200"
+          >
+            <Star className="w-4 h-4 fill-current" />
+            <span className="text-sm font-medium">
+              {stars !== null ? `${stars.toLocaleString()} stars on GitHub` : 'Loading...'}
+            </span>
+          </div>
+
+          <h1 className="mb-6 text-3xl font-bold tracking-tight leading-snug text-center text-gray-900 sm:text-4xl md:text-6xl font-inter">
+            Resize your images&nbsp;
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-500">
+              instantly
+            </span>
+            <br />
+              <span className="relative z-10">and keep their original format</span>
+          </h1>
+
+          <p className="px-4 mx-auto max-w-md text-base leading-relaxed text-center text-gray-600 sm:max-w-lg md:max-w-2xl sm:text-sm md:text-xl font-poppins sm:px-0">
+            Transform your images effortlessly while preserving quality and format.
+            Fast, reliable, and designed for modern workflows.
+          </p>
+
         </div>
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-8">
+          <div className="px-6 py-4 mb-8 text-red-700 bg-red-50 rounded-lg border border-red-200">
             {error}
           </div>
         )}
@@ -289,23 +355,24 @@ export default function Home() {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center hover:border-black transition-all duration-300 cursor-pointer bg-gray-50 hover:bg-gray-100"
+            className="rounded-xl p-10 text-center transition-all cursor-pointer backdrop-blur-lg bg-yellow-50/30 border border-dashed border-yellow-300 shadow-[inset_1px_1px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-lg hover:bg-yellow-50/40"
+
             onClick={() => fileInputRef.current?.click()}
           >
-            <div className="space-y-4">
-              <div className="mx-auto w-16 h-16 bg-black rounded-full flex items-center justify-center">
+             <div className="space-y-4">
+              <div className="flex justify-center items-center mx-auto w-16 h-16 bg-yellow-400 rounded-full shadow-md">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
               </div>
               <div>
-                <p className="text-lg font-semibold text-black">Drop your images here or click to browse</p>
+                <p className="text-lg font-semibold text-yellow-800">Drop your images here or click to browse</p>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-yellow-700">
                 Supports JPEG, JPG, PNG, WEBP (max 5MB each, up to {MAX_IMAGES} images)
               </p>
               {originalImages.length > 0 && (
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-yellow-600">
                   {originalImages.length} image{originalImages.length !== 1 ? 's' : ''} uploaded
                 </p>
               )}
@@ -321,191 +388,272 @@ export default function Home() {
           />
         </div>
         {originalImages.length > 0 && (
-          <div className="space-y-10">
-            {/* Resize settings */}
-            <div className="bg-gray-50 rounded-xl p-8 border border-gray-200 mb-8">
-              <h3 className="text-xl font-semibold text-black mb-6">Resize Settings</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-12">
+          {/* Resize Settings */}
+          <div>
+            <div className="p-8 rounded-xl border border-yellow-200 shadow-xl backdrop-blur-sm bg-white/80">
+              {/* Window Controls */}
+              <div className="px-6 py-4 -mx-8 -mt-8 mb-8 bg-gray-50 rounded-t-3xl border-b border-gray-200">
+                <div className="flex gap-2 items-center">
+                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                </div>
+              </div>
+              
+              <span className="flex gap-2">
+              <Settings2 className="w-8 h-8" />
+              <h3 className="mb-8 text-2xl font-semibold text-gray-900">Resize Settings</h3>
+              </span>
+
+              <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">Width (px)</label>
+                  <label className="block mb-3 text-sm font-medium text-gray-700">Width (px)</label>
                   <input
                     type="number"
                     value={resizeOptions.width}
-                    onChange={(e) => handleDimensionChange('width', parseInt(e.target.value) || 0)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white"
+                    onChange={(e) => handleDimensionChange("width", Number.parseInt(e.target.value) || 0)}
+                    className="px-4 py-3 w-full text-gray-900 bg-white rounded-xl border border-gray-200 shadow-lg transition-all duration-200 focus:border-gray-400 focus:ring-gray-400/20 focus:outline-none focus:ring-4"
                     min="1"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">Height (px)</label>
+                  <label className="block mb-3 text-sm font-medium text-gray-700">Height (px)</label>
                   <input
                     type="number"
                     value={resizeOptions.height}
-                    onChange={(e) => handleDimensionChange('height', parseInt(e.target.value) || 0)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white"
+                    onChange={(e) => handleDimensionChange("height", Number.parseInt(e.target.value) || 0)}
+                    className="px-4 py-3 w-full text-gray-900 bg-white rounded-xl border border-gray-200 shadow-lg transition-all duration-200 focus:border-gray-400 focus:ring-gray-400/20 focus:outline-none focus:ring-4"
                     min="1"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">Quality</label>
+                  <label className="block mb-3 text-sm font-medium text-gray-700">
+                    Quality: {resizeOptions.quality}%
+                  </label>
                   <input
                     type="range"
                     min="1"
                     max="100"
                     value={resizeOptions.quality}
-                    onChange={(e) => setResizeOptions(prev => ({ ...prev, quality: parseInt(e.target.value) }))}
-                    className="w-full"
+                    onChange={(e) =>
+                      setResizeOptions((prev) => ({ ...prev, quality: Number.parseInt(e.target.value) }))
+                    }
+                    className="w-full h-2 bg-yellow-100 rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #fde68a 0%, #fde68a
+                    ${resizeOptions.quality}%, #fef9c3 ${resizeOptions.quality}%, #fef9c3 100%)`,
+                    }}
                   />
-                  <span className="text-sm text-gray-600">{resizeOptions.quality}%</span>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">Format</label>
-                  <div className="flex gap-3">
-                    {SUPPORTED_FORMATS.map(fmt => (
-                      <span key={fmt} className={`rounded-full px-4 py-1 text-xs font-medium border-2 ${presentFormats.has(fmt) ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 border border-red-200 text-red-600'} transition-colors`}>
+                  <label className="block mb-3 text-sm font-medium text-gray-700">Supported Formats</label>
+                  <div className="flex flex-wrap gap-2">
+                    {SUPPORTED_FORMATS.map((fmt) => (
+                      <span
+                        key={fmt}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
+                          presentFormats.has(fmt)
+                            ? "bg-green-100 text-green-700 border border-green-200"
+                            : "bg-red-100 text-red-500 border border-red-200"
+                        }`}
+                      >
                         {fmt.toUpperCase()}
                       </span>
                     ))}
                   </div>
                 </div>
-                <div className="flex items-center gap-2 mt-6 md:mt-0">
-                  <input
-                    type="checkbox"
-                    checked={resizeOptions.maintainAspectRatio}
-                    onChange={(e) => setResizeOptions(prev => ({ ...prev, maintainAspectRatio: e.target.checked }))}
-                    className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black"
-                  />
-                  <span className="text-sm font-medium text-black">Maintain aspect ratio</span>
+
+                <div className="flex items-center">
+                  <label className="flex gap-3 items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={resizeOptions.maintainAspectRatio}
+                      onChange={(e) =>
+                        setResizeOptions((prev) => ({ ...prev, maintainAspectRatio: e.target.checked }))
+                      }
+                      className="w-5 h-5 bg-white rounded border-2 border-yellow-300 transition-all duration-200 checked:bg-yellow-400 checked:border-yellow-400 focus:ring-2 focus:ring-yellow-200/20"
+                    />
+                    <span className="font-medium text-gray-700">Maintain aspect ratio</span>
+                  </label>
                 </div>
               </div>
-              <div className="flex gap-4 mt-8">
+
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <button
                   onClick={handleResize}
                   disabled={isLoading}
-                  className="flex-1 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                  className="flex-1 px-8 py-4 font-medium text-yellow-500 bg-yellow-100 rounded-md border border-yellow-200 shadow-lg transition duration-300 transform hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  {isLoading ? 'Processing...' : `Resize ${originalImages.length} Image${originalImages.length !== 1 ? 's' : ''}`}
+                  {isLoading ? (
+                    <div className="flex gap-2 justify-center items-center">
+                      <div className="w-5 h-5 rounded-full border-2 animate-spin border-white/30 border-t-white"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    `Resize ${originalImages.length} Image${originalImages.length !== 1 ? "s" : ""}`
+                  )}
                 </button>
+
                 <button
                   onClick={clearAll}
-                  className="px-6 py-3 border border-gray-300 text-black rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  className="px-8 py-4 font-medium text-red-500 bg-red-100 rounded-md border border-red-200 shadow-lg transition-all duration-300 transform hover:bg-gray-50"
                 >
                   Clear All
                 </button>
               </div>
             </div>
-            {/* Original Images Section */}
-            <div>
-              <h3 className="text-lg font-semibold text-black mb-4">Original Images</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {originalImages.map((image) => (
-                  <div key={image.id} className="bg-white rounded-lg shadow p-4 flex flex-col items-center relative">
-                    <button
-                      className="absolute top-2 right-2 bg-white shadow rounded-full p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400 z-10"
-                      onClick={() => removeImage(image.id)}
-                      title="Remove image"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                    <div className="relative w-full aspect-square mb-2">
-                      <Image
-                        src={image.preview}
-                        alt={image.file.name}
-                        fill
-                        className="object-contain rounded"
-                      />
-                    </div>
-                    <div className="text-xs text-gray-600 mb-1 truncate w-full text-center">
-                      {image.file.name}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {image.width} × {image.height} px
-                    </div>
+          </div>
+
+          {/* Original Images */}
+          <div>
+          <h3 className="inline-block relative mb-6 text-2xl font-semibold text-gray-900 font-poppins">
+            <span className="relative z-10 px-1">Original Images</span>
+            <span className="absolute inset-x-0 bottom-1 z-0 h-3 bg-yellow-200 rounded-sm -rotate-1"></span>
+          </h3>
+
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {originalImages.map((image) => (
+                <div
+                  key={image.id}
+                  className="relative p-4 rounded-xl border border-yellow-200 shadow-lg backdrop-blur-sm transition-all duration-300 transform hover:shadow-xl hover:scale-105 bg-white/80"
+                >
+                  <button
+                    className="absolute top-2 right-2 z-10 p-2 text-gray-400 bg-white rounded-full shadow-lg transition-all duration-200 hover:text-red-600 hover:bg-red-50"
+                    onClick={() => removeImage(image.id)}
+                    title="Remove image"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+
+                  <div className="overflow-hidden relative mb-3 w-full rounded-xl aspect-square">
+                    <Image
+                      src={image.preview || "/placeholder.svg"}
+                      alt={image.file.name}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                ))}
-              </div>
+
+                  <div
+                    className="mb-1 text-sm font-medium text-gray-700 truncate"
+                  >
+                    {image.file.name}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {image.width} × {image.height} px
+                  </div>
+                </div>
+              ))}
             </div>
-            {/* Resized Images Section */}
+          </div>
+
+          {/* Resized Images */}
+          {Object.keys(resizedImages).length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold text-black mb-4">Resized Images</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {originalImages.map((image) => (
-                  resizedImages[image.id] && (
-                    <div className="flex flex-col items-center relative bg-white rounded-lg shadow p-4">
-                      <button
-                        className="absolute top-2 right-2 bg-white shadow rounded-full p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 z-10"
-                        onClick={() => {
-                          setModalImage(resizedImages[image.id]);
-                          setModalFileName(randomName(image.ext));
-                        }}
-                        title="Preview image"
+              <h3 className="inline-block relative mb-6 text-2xl font-semibold text-gray-900 font-poppins">
+                <span className="relative z-10 px-1">Resized Images</span>
+                <span className="absolute inset-x-0 bottom-1 z-0 h-3 bg-yellow-200 rounded-sm -rotate-1"></span>
+              </h3>
+              
+              <div className="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {originalImages.map(
+                  (image) =>
+                    resizedImages[image.id] && (
+                      <div
+                        key={image.id}
+                        className="relative p-4 rounded-xl border border-yellow-200 shadow-lg backdrop-blur-sm transition-all duration-300 transform hover:shadow-xl hover:scale-105 bg-white/80"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 16h.01M12 8v4" />
-                        </svg>
-                      </button>
-                      <div className="relative w-full aspect-square mb-2">
-                        <Image
-                          src={resizedImages[image.id]}
-                          alt={`Resized ${image.file.name}`}
-                          fill
-                          className="object-contain rounded"
-                        />
-                      </div>
-                      <div className="text-xs text-gray-600 mb-1 truncate w-full text-center">
-                        {randomName(image.ext)}
-                      </div>
-                      <div className="text-xs text-gray-500 mb-2">
-                        {resizeOptions.width} × {resizeOptions.height} px
-                      </div>
-                      <div className="flex items-center justify-center w-full gap-2 mt-auto">
+                        <button
+                          className="absolute top-2 right-2 z-10 p-2 text-gray-400 bg-white rounded-full shadow-lg transition-all duration-200 hover:text-blue-600 hover:bg-blue-50"
+                          onClick={() => {
+                            setModalImage(resizedImages[image.id])
+                            setModalFileName(randomName(image.ext))
+                          }}
+                          title="Preview image"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+
+                        <div className="overflow-hidden relative mb-3 w-full rounded-xl aspect-square">
+                          <Image
+                            src={resizedImages[image.id] || "/placeholder.svg"}
+                            alt={`Resized ${image.file.name}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+
+                        <div
+                          className="mb-1 text-sm font-medium text-gray-700 truncate"
+                        >
+                          {randomName(image.ext)}
+                        </div>
+                        <div className="mb-2 text-xs text-gray-500">
+                          {resizeOptions.width} × {resizeOptions.height} px
+                        </div>
+
                         <button
                           onClick={() => handleDownload(image.id)}
-                          className="flex items-center gap-1 bg-black text-white px-3 py-1 rounded hover:bg-gray-800 transition-colors text-xs font-medium"
+                          className="flex gap-2 justify-center items-center px-4 py-2 w-full font-medium text-yellow-500 bg-yellow-100 rounded-md border border-yellow-200 shadow-lg transition-all duration-300 transform hover:bg-gray-50"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-                          </svg>
+                          <Download className="w-4 h-4" />
                           Download ({formatFileSize(image.file.size)})
                         </button>
                       </div>
-                    </div>
-                  )
-                ))}
+                    ),
+                )}
               </div>
-              {Object.keys(resizedImages).length > 0 && (
-                <div className="text-center mt-6">
-                  <button
-                    onClick={handleDownloadAllZip}
-                    className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
-                  >
+
+              <div className="text-center">
+              <button
+                  onClick={handleDownloadAll}
+                  className="px-12 py-4 font-medium text-yellow-500 bg-yellow-100 rounded-md border border-yellow-200 shadow-xl transition-all duration-300 transform hover:bg-gray-50"
+                >
+                  <div className="flex gap-3 items-center">
+                    <Download className="w-5 h-5" />
                     Download All ({formatFileSize(totalResizedSize)})
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-        {/* Modal for preview */}
-        {modalImage && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" onClick={() => setModalImage(null)}>
-            <div className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-4 relative" onClick={e => e.stopPropagation()}>
-              <button className="absolute top-2 right-2 text-gray-500 hover:text-black" onClick={() => setModalImage(null)}>
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-              <div className="relative w-full aspect-square mx-auto">
-                <Image src={modalImage} alt="Preview" fill className="object-contain rounded" />
+                  </div>
+                </button>
               </div>
-              <div className="text-center text-xs text-gray-600">{modalFileName}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Modal for preview */}
+      {modalImage && (
+        <div
+          className="flex fixed inset-0 z-50 justify-center items-center p-4 backdrop-blur-sm bg-black/70"
+          onClick={() => setModalImage(null)}
+        >
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden bg-white"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-4 right-4 z-10 p-2 text-gray-500 bg-white rounded-full shadow-lg transition-all duration-200 hover:text-gray-900 hover:bg-gray-100"
+              onClick={() => setModalImage(null)}
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="relative w-full h-[70vh]">
+              <Image src={modalImage || "/placeholder.svg"} alt="Preview" fill className="object-contain p-4" />
+            </div>
+            <div
+              className="p-4 text-center text-gray-600 border-t border-gray-200"
+            >
+              <p className="font-medium">{modalFileName}</p>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
-  )
-} 
+  </div>
+)
+}
