@@ -317,8 +317,24 @@ export default function Home() {
 
       <div className="container px-6 py-12 mx-auto max-w-6xl">
         {/* Hero Section */}
-        <div className="relative mb-16 text-center">
-
+        <div className="overflow-visible relative mb-16 text-center">
+          {/* Aurora Background */}
+          <div aria-hidden="true" className="absolute inset-0 z-0 w-full h-full pointer-events-none">
+            {/* Left Aurora - larger, further left, less opacity */}
+            <div className="absolute left-[-10vw] top-1/2 -translate-y-1/2 w-[55vw] h-[80%] max-w-2xl blur-3xl opacity-30"
+              style={{
+                background: 'radial-gradient(ellipse 70% 50% at 0% 50%, #fde68a 60%, #fef9c3 100%, transparent 100%)',
+                filter: 'blur(80px)',
+              }}
+            />
+            {/* Right Aurora - larger, further right, less opacity */}
+            <div className="absolute right-[-10vw] top-1/2 -translate-y-1/2 w-[55vw] h-[80%] max-w-2xl blur-2xl opacity-20 rotate-12"
+              style={{
+                background: 'radial-gradient(ellipse 60% 40% at 100% 50%, #facc15 40%, #fde68a 100%, transparent 100%)',
+                filter: 'blur(70px)',
+              }}
+            />
+          </div>
           {/* GitHub Badge */}
           <div
             className= "inline-flex gap-2 items-center px-6 py-2 mb-8 text-yellow-400 bg-yellow-50 rounded-full border border-yellow-200"
@@ -329,7 +345,7 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="mb-6 text-3xl font-bold tracking-tight leading-snug text-center text-gray-900 sm:text-4xl md:text-6xl font-inter">
+          <h1 className="z-10 mb-6 text-3xl font-bold tracking-tight leading-snug text-center text-gray-900 sm:text-4xl md:text-6xl font-inter">
             Resize your images&nbsp;
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-500">
               instantly

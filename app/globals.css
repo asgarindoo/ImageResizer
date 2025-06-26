@@ -28,6 +28,12 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  ::selection {
+    @apply bg-yellow-300 text-black;
+  }
+  ::-moz-selection {
+    @apply bg-yellow-300 text-black;
+  }
 }
 
 @keyframes fadeIn {
@@ -61,4 +67,6 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
-} 
+}
+
+
