@@ -428,7 +428,7 @@ export default function Home() {
                   <input
                     type="number"
                     value={resizeOptions.width}
-                    onChange={(e) => handleDimensionChange("width", Number.parseInt(e.target.value) || 0)}
+                    onChange={(e) => handleDimensionChange("width", Number.parseInt(e.target.value))}
                     className="px-4 py-3 w-full text-gray-900 bg-white rounded-xl border border-gray-200 shadow-lg transition-all duration-200 focus:border-gray-400 focus:ring-gray-400/20 focus:outline-none focus:ring-4"
                     min="1"
                   />
@@ -439,7 +439,7 @@ export default function Home() {
                   <input
                     type="number"
                     value={resizeOptions.height}
-                    onChange={(e) => handleDimensionChange("height", Number.parseInt(e.target.value) || 0)}
+                    onChange={(e) => handleDimensionChange("height", Number.parseInt(e.target.value))}
                     className="px-4 py-3 w-full text-gray-900 bg-white rounded-xl border border-gray-200 shadow-lg transition-all duration-200 focus:border-gray-400 focus:ring-gray-400/20 focus:outline-none focus:ring-4"
                     min="1"
                   />
@@ -457,7 +457,7 @@ export default function Home() {
                     onChange={(e) =>
                       setResizeOptions((prev) => ({ ...prev, quality: Number.parseInt(e.target.value) }))
                     }
-                    className="w-full h-2 bg-yellow-100 rounded-lg appearance-none cursor-pointer"
+                    className="slider-yellow"
                     style={{
                       background: `linear-gradient(to right, #fde68a 0%, #fde68a
                     ${resizeOptions.quality}%, #fef9c3 ${resizeOptions.quality}%, #fef9c3 100%)`,
@@ -468,7 +468,7 @@ export default function Home() {
 
               <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2">
                 <div>
-                  <label className="block mb-3 text-sm font-medium text-gray-700">Supported Formats</label>
+                  <label className="block mb-3 text-sm font-medium text-gray-700">Uploaded Formats</label>
                   <div className="flex flex-wrap gap-2">
                     {SUPPORTED_FORMATS.map((fmt) => (
                       <span
@@ -493,7 +493,7 @@ export default function Home() {
                       onChange={(e) =>
                         setResizeOptions((prev) => ({ ...prev, maintainAspectRatio: e.target.checked }))
                       }
-                      className="w-5 h-5 bg-white rounded border-2 border-yellow-300 transition-all duration-200 checked:bg-yellow-400 checked:border-yellow-400 focus:ring-2 focus:ring-yellow-200/20"
+                      className="checkbox-yellow"
                     />
                     <span className="font-medium text-gray-700">Maintain aspect ratio</span>
                   </label>
@@ -669,6 +669,12 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <footer className="py-6 mt-16 w-full text-sm text-center text-gray-500 border-t border-yellow-100 bg-white/80">
+        <div>this website may not save the world, but it can resize your images</div>
+        <div className="mt-1">© 2025 – asgarindoo</div>
+      </footer>
     </div>
   </div>
 )

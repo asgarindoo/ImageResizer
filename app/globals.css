@@ -34,6 +34,72 @@ body {
   ::-moz-selection {
     @apply bg-yellow-300 text-black;
   }
+  .slider-yellow {
+    @apply w-full h-2 rounded-lg appearance-none cursor-pointer bg-yellow-100;
+    position: relative;
+  }
+  .slider-yellow::-webkit-slider-thumb {
+    @apply appearance-none w-5 h-5 rounded-full bg-yellow-400 border-2 border-yellow-500 shadow-md transition;
+    margin-top: -6px;
+  }
+  .slider-yellow::-moz-range-thumb {
+    @apply appearance-none w-5 h-5 rounded-full bg-yellow-400 border-2 border-yellow-500 shadow-md transition;
+    margin-top: 0px;
+  }
+  .slider-yellow::-ms-thumb {
+    @apply appearance-none w-5 h-5 rounded-full bg-yellow-400 border-2 border-yellow-500 shadow-md transition;
+  }
+  .slider-yellow:focus {
+    @apply outline-none ring-2 ring-yellow-300;
+  }
+  .slider-yellow::-webkit-slider-thumb:hover {
+    @apply bg-yellow-300 border-yellow-400;
+  }
+  .slider-yellow::-moz-range-thumb:hover {
+    @apply bg-yellow-300 border-yellow-400;
+  }
+  .slider-yellow::-ms-thumb:hover {
+    @apply bg-yellow-300 border-yellow-400;
+  }
+  .slider-yellow::-webkit-slider-runnable-track {
+    @apply bg-yellow-200 h-2 rounded-lg;
+  }
+  .slider-yellow::-ms-fill-lower {
+    @apply bg-yellow-200;
+  }
+  .slider-yellow::-ms-fill-upper {
+    @apply bg-yellow-100;
+  }
+  .slider-yellow::-moz-range-track {
+    @apply bg-yellow-200 h-2 rounded-lg;
+  }
+  .slider-yellow::-ms-tooltip {
+    display: none;
+  }
+
+  .checkbox-yellow {
+    @apply w-5 h-5 bg-white rounded border-2 border-yellow-300 transition-all duration-200 focus:ring-2 focus:ring-yellow-200/20 appearance-none relative;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .checkbox-yellow:checked {
+    @apply bg-yellow-400 border-yellow-400;
+  }
+  .checkbox-yellow:focus {
+    @apply ring-2 ring-yellow-200/20;
+  }
+  .checkbox-yellow:checked::after {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
 }
 
 @keyframes fadeIn {
@@ -68,5 +134,4 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-
 
