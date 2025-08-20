@@ -88,6 +88,8 @@ export async function POST(request: NextRequest) {
     // Generate the resized image buffer
     const resizedBuffer = await processedImage.toBuffer()
 
+    const uint8Array = new Uint8Array(resizedBuffer);
+
     // Determine the correct MIME type
     const mimeTypes = {
       jpeg: 'image/jpeg',
@@ -97,7 +99,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Return the resized image as a blob
-    return new NextResponse(resizedBuffer, {
+    return new NextResponse(uint8Array, {
       headers: {
         'Content-Type': mimeTypes[format as keyof typeof mimeTypes],
         'Content-Disposition': `attachment; filename=\"resized-image.${format}\"`,
