@@ -24,7 +24,7 @@ const SUPPORTED_FORMATS = ['jpeg', 'jpg', 'png', 'webp'] as const;
 
 function randomName(ext: string) {
   const rand = Math.random().toString(36).substring(2, 10);
-  return `${rand}_byDimensify.${ext}`;
+  return `${rand}_byResizeIt.${ext}`;
 }
 
 // Utility to format file size
@@ -243,7 +243,7 @@ export default function Home() {
       const zipBlob = await zip.generateAsync({ type: 'blob' })
       const link = document.createElement('a')
       link.href = URL.createObjectURL(zipBlob)
-      link.download = `images_byDimensify.zip`
+      link.download = `images_byResizeIt.zip`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -297,17 +297,17 @@ export default function Home() {
       {/* Sticky Navbar */}
       <nav className="sticky top-0 z-50 border-b border-yellow-100 shadow-sm backdrop-blur-md bg-white/80">
         <div className="container px-6 py-4 mx-auto">
-          <div className="flex justify-between items-center">
-          <div className="flex gap-2 items-center text-2xl font-extrabold text-black">
+          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-2xl font-extrabold text-black">
           <div className="w-3 h-3 bg-yellow-400 rounded-full shadow animate-pulse"/>
-          <span>Dimensify</span>
+          <span>ResizeIt</span>
         </div>
 
             <a
               href="https://github.com/asgarindoo/ImageResizer"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-full transition-colors hover:bg-yellow-50"
+              className="p-2 transition-colors rounded-full hover:bg-yellow-50"
             >
               <Github className="w-6 h-6 text-black" />
             </a>
@@ -315,9 +315,9 @@ export default function Home() {
         </div>
       </nav>
 
-      <div className="container px-6 py-12 mx-auto max-w-6xl">
+      <div className="container max-w-6xl px-6 py-12 mx-auto">
         {/* Hero Section */}
-        <div className="overflow-visible relative mb-16 text-center">
+        <div className="relative mb-16 overflow-visible text-center">
           {/* Aurora Background */}
           <div aria-hidden="true" className="absolute inset-0 z-0 w-full h-full pointer-events-none">
             {/* Left Aurora - larger, further left, less opacity */}
@@ -337,7 +337,7 @@ export default function Home() {
           </div>
           {/* GitHub Badge */}
           <div
-            className= "inline-flex gap-2 items-center px-6 py-2 mb-8 text-yellow-400 bg-yellow-50 rounded-full border border-yellow-200"
+            className= "inline-flex items-center gap-2 px-6 py-2 mb-8 text-yellow-400 border border-yellow-200 rounded-full bg-yellow-50"
           >
             <Star className="w-4 h-4 fill-current" />
             <span className="text-sm font-medium">
@@ -345,7 +345,7 @@ export default function Home() {
             </span>
           </div>
 
-          <h1 className="z-10 mb-6 text-3xl font-bold tracking-tight leading-snug text-center text-gray-900 sm:text-4xl md:text-6xl font-inter">
+          <h1 className="z-10 mb-6 text-3xl font-bold leading-snug tracking-tight text-center text-gray-900 sm:text-4xl md:text-6xl font-inter">
             Resize your images&nbsp;
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-500">
               instantly
@@ -354,14 +354,14 @@ export default function Home() {
               <span className="relative z-10">and keep their original format</span>
           </h1>
 
-          <p className="px-4 mx-auto max-w-md text-base leading-relaxed text-center text-gray-600 sm:max-w-lg md:max-w-2xl sm:text-sm md:text-xl font-poppins sm:px-0">
+          <p className="max-w-md px-4 mx-auto text-base leading-relaxed text-center text-gray-600 sm:max-w-lg md:max-w-2xl sm:text-sm md:text-xl font-poppins sm:px-0">
             Transform your images effortlessly while preserving quality and format.
             Fast, reliable, and designed for modern workflows.
           </p>
 
         </div>
         {error && (
-          <div className="px-6 py-4 mb-8 text-red-700 bg-red-50 rounded-lg border border-red-200">
+          <div className="px-6 py-4 mb-8 text-red-700 border border-red-200 rounded-lg bg-red-50">
             {error}
           </div>
         )}
@@ -376,7 +376,7 @@ export default function Home() {
             onClick={() => fileInputRef.current?.click()}
           >
              <div className="space-y-4">
-              <div className="flex justify-center items-center mx-auto w-16 h-16 bg-yellow-400 rounded-full shadow-md">
+              <div className="flex items-center justify-center w-16 h-16 mx-auto bg-yellow-400 rounded-full shadow-md">
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
@@ -407,10 +407,10 @@ export default function Home() {
           <div className="space-y-12">
           {/* Resize Settings */}
           <div>
-            <div className="p-8 rounded-xl border border-yellow-200 shadow-xl backdrop-blur-sm bg-white/80">
+            <div className="p-8 border border-yellow-200 shadow-xl rounded-xl backdrop-blur-sm bg-white/80">
               {/* Window Controls */}
-              <div className="px-6 py-4 -mx-8 -mt-8 mb-8 bg-gray-50 rounded-t-3xl border-b border-gray-200">
-                <div className="flex gap-2 items-center">
+              <div className="px-6 py-4 mb-8 -mx-8 -mt-8 border-b border-gray-200 bg-gray-50 rounded-t-3xl">
+                <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-red-400 rounded-full"></div>
                   <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
                   <div className="w-3 h-3 bg-green-400 rounded-full"></div>
@@ -429,7 +429,7 @@ export default function Home() {
                     type="number"
                     value={resizeOptions.width}
                     onChange={(e) => handleDimensionChange("width", Number.parseInt(e.target.value))}
-                    className="px-4 py-3 w-full text-gray-900 bg-white rounded-xl border border-gray-200 shadow-lg transition-all duration-200 focus:border-gray-400 focus:ring-gray-400/20 focus:outline-none focus:ring-4"
+                    className="w-full px-4 py-3 text-gray-900 transition-all duration-200 bg-white border border-gray-200 shadow-lg rounded-xl focus:border-gray-400 focus:ring-gray-400/20 focus:outline-none focus:ring-4"
                     min="1"
                   />
                 </div>
@@ -440,7 +440,7 @@ export default function Home() {
                     type="number"
                     value={resizeOptions.height}
                     onChange={(e) => handleDimensionChange("height", Number.parseInt(e.target.value))}
-                    className="px-4 py-3 w-full text-gray-900 bg-white rounded-xl border border-gray-200 shadow-lg transition-all duration-200 focus:border-gray-400 focus:ring-gray-400/20 focus:outline-none focus:ring-4"
+                    className="w-full px-4 py-3 text-gray-900 transition-all duration-200 bg-white border border-gray-200 shadow-lg rounded-xl focus:border-gray-400 focus:ring-gray-400/20 focus:outline-none focus:ring-4"
                     min="1"
                   />
                 </div>
@@ -486,7 +486,7 @@ export default function Home() {
                 </div>
 
                 <div className="flex items-center">
-                  <label className="flex gap-3 items-center cursor-pointer">
+                  <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={resizeOptions.maintainAspectRatio}
@@ -504,11 +504,11 @@ export default function Home() {
                 <button
                   onClick={handleResize}
                   disabled={isLoading}
-                  className="flex-1 px-8 py-4 font-medium text-yellow-500 bg-yellow-100 rounded-md border border-yellow-200 shadow-lg transition duration-300 transform hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="flex-1 px-8 py-4 font-medium text-yellow-500 transition duration-300 transform bg-yellow-100 border border-yellow-200 rounded-md shadow-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isLoading ? (
-                    <div className="flex gap-2 justify-center items-center">
-                      <div className="w-5 h-5 rounded-full border-2 animate-spin border-white/30 border-t-white"></div>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 rounded-full animate-spin border-white/30 border-t-white"></div>
                       Processing...
                     </div>
                   ) : (
@@ -518,7 +518,7 @@ export default function Home() {
 
                 <button
                   onClick={clearAll}
-                  className="px-8 py-4 font-medium text-red-500 bg-red-100 rounded-md border border-red-200 shadow-lg transition-all duration-300 transform hover:bg-gray-50"
+                  className="px-8 py-4 font-medium text-red-500 transition-all duration-300 transform bg-red-100 border border-red-200 rounded-md shadow-lg hover:bg-gray-50"
                 >
                   Clear All
                 </button>
@@ -528,26 +528,26 @@ export default function Home() {
 
           {/* Original Images */}
           <div>
-          <h3 className="inline-block relative mb-6 text-2xl font-semibold text-gray-900 font-poppins">
+          <h3 className="relative inline-block mb-6 text-2xl font-semibold text-gray-900 font-poppins">
             <span className="relative z-10 px-1">Original Images</span>
-            <span className="absolute inset-x-0 bottom-1 z-0 h-3 bg-yellow-200 rounded-sm -rotate-1"></span>
+            <span className="absolute inset-x-0 z-0 h-3 bg-yellow-200 rounded-sm bottom-1 -rotate-1"></span>
           </h3>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {originalImages.map((image) => (
                 <div
                   key={image.id}
-                  className="relative p-4 rounded-xl border border-yellow-200 shadow-lg backdrop-blur-sm transition-all duration-300 transform hover:shadow-xl hover:scale-105 bg-white/80"
+                  className="relative p-4 transition-all duration-300 transform border border-yellow-200 shadow-lg rounded-xl backdrop-blur-sm hover:shadow-xl hover:scale-105 bg-white/80"
                 >
                   <button
-                    className="absolute top-2 right-2 z-10 p-2 text-gray-400 bg-white rounded-full shadow-lg transition-all duration-200 hover:text-red-600 hover:bg-red-50"
+                    className="absolute z-10 p-2 text-gray-400 transition-all duration-200 bg-white rounded-full shadow-lg top-2 right-2 hover:text-red-600 hover:bg-red-50"
                     onClick={() => removeImage(image.id)}
                     title="Remove image"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
 
-                  <div className="overflow-hidden relative mb-3 w-full rounded-xl aspect-square">
+                  <div className="relative w-full mb-3 overflow-hidden rounded-xl aspect-square">
                     <Image
                       src={image.preview || "/placeholder.svg"}
                       alt={image.file.name}
@@ -572,9 +572,9 @@ export default function Home() {
           {/* Resized Images */}
           {Object.keys(resizedImages).length > 0 && (
             <div>
-              <h3 className="inline-block relative mb-6 text-2xl font-semibold text-gray-900 font-poppins">
+              <h3 className="relative inline-block mb-6 text-2xl font-semibold text-gray-900 font-poppins">
                 <span className="relative z-10 px-1">Resized Images</span>
-                <span className="absolute inset-x-0 bottom-1 z-0 h-3 bg-yellow-200 rounded-sm -rotate-1"></span>
+                <span className="absolute inset-x-0 z-0 h-3 bg-yellow-200 rounded-sm bottom-1 -rotate-1"></span>
               </h3>
               
               <div className="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -583,10 +583,10 @@ export default function Home() {
                     resizedImages[image.id] && (
                       <div
                         key={image.id}
-                        className="relative p-4 rounded-xl border border-yellow-200 shadow-lg backdrop-blur-sm transition-all duration-300 transform hover:shadow-xl hover:scale-105 bg-white/80"
+                        className="relative p-4 transition-all duration-300 transform border border-yellow-200 shadow-lg rounded-xl backdrop-blur-sm hover:shadow-xl hover:scale-105 bg-white/80"
                       >
                         <button
-                          className="absolute top-2 right-2 z-10 p-2 text-gray-400 bg-white rounded-full shadow-lg transition-all duration-200 hover:text-blue-600 hover:bg-blue-50"
+                          className="absolute z-10 p-2 text-gray-400 transition-all duration-200 bg-white rounded-full shadow-lg top-2 right-2 hover:text-blue-600 hover:bg-blue-50"
                           onClick={() => {
                             setModalImage(resizedImages[image.id])
                             setModalFileName(randomName(image.ext))
@@ -596,7 +596,7 @@ export default function Home() {
                           <Eye className="w-4 h-4" />
                         </button>
 
-                        <div className="overflow-hidden relative mb-3 w-full rounded-xl aspect-square">
+                        <div className="relative w-full mb-3 overflow-hidden rounded-xl aspect-square">
                           <Image
                             src={resizedImages[image.id] || "/placeholder.svg"}
                             alt={`Resized ${image.file.name}`}
@@ -616,7 +616,7 @@ export default function Home() {
 
                         <button
                           onClick={() => handleDownload(image.id)}
-                          className="flex gap-2 justify-center items-center px-4 py-2 w-full font-medium text-yellow-500 bg-yellow-100 rounded-md border border-yellow-200 shadow-lg transition-all duration-300 transform hover:bg-gray-50"
+                          className="flex items-center justify-center w-full gap-2 px-4 py-2 font-medium text-yellow-500 transition-all duration-300 transform bg-yellow-100 border border-yellow-200 rounded-md shadow-lg hover:bg-gray-50"
                         >
                           <Download className="w-4 h-4" />
                           Download ({formatFileSize(image.file.size)})
@@ -629,9 +629,9 @@ export default function Home() {
               <div className="text-center">
               <button
                   onClick={handleDownloadAll}
-                  className="px-12 py-4 font-medium text-yellow-500 bg-yellow-100 rounded-md border border-yellow-200 shadow-xl transition-all duration-300 transform hover:bg-gray-50"
+                  className="px-12 py-4 font-medium text-yellow-500 transition-all duration-300 transform bg-yellow-100 border border-yellow-200 rounded-md shadow-xl hover:bg-gray-50"
                 >
-                  <div className="flex gap-3 items-center">
+                  <div className="flex items-center gap-3">
                     <Download className="w-5 h-5" />
                     Download All ({formatFileSize(totalResizedSize)})
                   </div>
@@ -645,7 +645,7 @@ export default function Home() {
       {/* Modal for preview */}
       {modalImage && (
         <div
-          className="flex fixed inset-0 z-50 justify-center items-center p-4 backdrop-blur-sm bg-black/70"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/70"
           onClick={() => setModalImage(null)}
         >
           <div
@@ -653,7 +653,7 @@ export default function Home() {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="absolute top-4 right-4 z-10 p-2 text-gray-500 bg-white rounded-full shadow-lg transition-all duration-200 hover:text-gray-900 hover:bg-gray-100"
+              className="absolute z-10 p-2 text-gray-500 transition-all duration-200 bg-white rounded-full shadow-lg top-4 right-4 hover:text-gray-900 hover:bg-gray-100"
               onClick={() => setModalImage(null)}
             >
               <X className="w-6 h-6" />
@@ -671,7 +671,7 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="py-6 mt-16 w-full text-sm text-center text-gray-500 border-t border-yellow-100 bg-white/80">
+      <footer className="w-full py-6 mt-16 text-sm text-center text-gray-500 border-t border-yellow-100 bg-white/80">
         <div>this website may not save the world, but it can resize your images</div>
         <div className="mt-1">© 2025 – asgarindoo</div>
       </footer>
