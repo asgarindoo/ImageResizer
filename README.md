@@ -1,4 +1,4 @@
-# Dimensify
+# ResizeIt
 
 Image resizing web application built with Next.js (App Router) that allows users to upload, resize, and download multiple images instantly without any permanent storage.
 
